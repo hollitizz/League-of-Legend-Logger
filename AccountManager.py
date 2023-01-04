@@ -13,7 +13,10 @@ class AccountManager:
                 with open("accounts.lal", "rb") as r_file:
                     datas = r_file.read()
             except:
-                datas = json.dumps({})
+                with open("accounts.lal", "w") as w_file:
+                    w_file.write("{}")
+                with open("accounts.lal", "rb") as r_file:
+                    datas = r_file.read()
             with open("accounts.lal", "wb") as w_file:
                 w_file.write(encrypt(password, datas))
         with open("accounts.lal", "rb") as f:
@@ -27,7 +30,7 @@ class AccountManager:
 
     def __save(self):
         with open("accounts.lal", "wb") as f:
-            datas = json.dumps(self.__accounts, indent=4)
+            datas = json.dumps(self.__accounts, indent=4).encode()
             f.write(encrypt(self.__password, datas))
 
     def __windowEnumerationHandler(self, hwnd, top_windows):
