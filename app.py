@@ -2,8 +2,6 @@ from tkinter import simpledialog
 from AccountManager import AccountManager
 from tkinter import *
 from tkinter import ttk
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
 from utils import genSalt, hashPassword
 
 class App(Tk):

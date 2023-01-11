@@ -1,3 +1,5 @@
 output
 *.lal
 __pycache__
+*.txt
+installer.bat

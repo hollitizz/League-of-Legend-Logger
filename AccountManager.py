@@ -1,12 +1,12 @@
 import json
-import pyautogui
-import pyperclip
 import win32gui
+from LcuLogin import LcuLogin
 
 from utils import encrypt, decrypt
 
-class AccountManager:
+class AccountManager(LcuLogin):
     def __init__(self, password, encrypted):
+        super().__init__()
         self.__password: str = password
         if not encrypted:
             try:
@@ -49,14 +49,6 @@ class AccountManager:
         if not is_found:
             raise Exception("Riot Client not found")
 
-    def __copyPasteThis(self, str):
-        pyperclip.copy(str)
-        pyautogui.hotkey('ctrl', 'v')
-
-    def __clearInput(self):
-        pyautogui.hotkey('ctrl', 'a')
-        pyautogui.press('delete')
-
     def addAccount(self, name, username, password, description = ""):
         self.__accounts[name] = {
             "description": description,
@@ -80,20 +72,12 @@ class AccountManager:
 
     def login(self, name):
         credentials = self.__getAccountCredentials(name)
+        self.loginRequest(credentials["username"], credentials["password"])
         try:
             self.__focusRiotClient()
         except:
             print("Riot Client not found")
             return
-        pyautogui.moveTo(358, 365)
-        pyautogui.leftClick()
-        self.__clearInput()
-        self.__copyPasteThis(credentials["username"])
-        pyautogui.moveTo(358, 425)
-        pyautogui.leftClick()
-        self.__clearInput()
-        self.__copyPasteThis(credentials["password"])
-        pyautogui.press('enter')
 
 
 if __name__ == "__main__":
