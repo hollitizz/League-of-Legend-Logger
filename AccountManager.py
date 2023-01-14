@@ -4,7 +4,7 @@ from LcuLogin import LcuLogin
 
 from utils import encrypt, decrypt
 
-class AccountManager(LcuLogin):
+class AccountManager():
     def __init__(self, password, encrypted):
         super().__init__()
         self.__password: str = password
@@ -71,8 +71,9 @@ class AccountManager(LcuLogin):
         ]
 
     def login(self, name):
+        login_object = LcuLogin()
         credentials = self.__getAccountCredentials(name)
-        self.loginRequest(credentials["username"], credentials["password"])
+        login_object.loginRequest(credentials["username"], credentials["password"])
         try:
             self.__focusRiotClient()
         except:
