@@ -1,6 +1,8 @@
 import base64
 import hashlib
 import os
+from league_connection import LeagueConnection
+from tkinter import Canvas, Frame, ttk
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import Fernet
@@ -69,6 +71,37 @@ def decrypt(password, encrypted_data):
     fernet = Fernet(base64.urlsafe_b64encode(key))
     decrypted_data = fernet.decrypt(encrypted_data)
     return decrypted_data.decode()
+
+
+class ScrollableFrame(Frame):
+    def __init__(self, container, *args, **kwargs):
+        super().__init__(container, *args, **kwargs)
+        self.canvas = Canvas(self)
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = Frame(self.canvas)
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(
+                scrollregion=self.canvas.bbox("all")
+            )
+        )
+        def _on_mousewheel(event):
+            self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        self.canvas.bind_all("<MouseWheel>", _on_mousewheel)
+        self.scrollable_frame.bind_all("<MouseWheel>", _on_mousewheel)
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+
+        self.canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.place(x=400, y=0, height=500)
+
+
+def logToLeague(username, password):
+    lockfile = os.path.expanduser('~\\AppData\\Local\\Riot Games\\Riot Client\\Config\\lockfile')
+    connection = LeagueConnection(lockfile, timeout=10)
+    data = {'username': username, 'password': password, 'persistLogin': False}
+    connection.put('/rso-auth/v1/session/credentials', json=data)
 
 # Example usage
 if __name__ == '__main__':

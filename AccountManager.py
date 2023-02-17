@@ -1,8 +1,5 @@
 import json
-import win32gui
-from LcuLogin import LcuLogin
-
-from utils import encrypt, decrypt
+from utils import encrypt, decrypt, logToLeague
 
 class AccountManager():
     def __init__(self, password, encrypted):
@@ -33,22 +30,6 @@ class AccountManager():
             datas = json.dumps(self.__accounts, indent=4).encode()
             f.write(encrypt(self.__password, datas))
 
-    def __windowEnumerationHandler(self, hwnd, top_windows):
-        top_windows.append((hwnd, win32gui.GetWindowText(hwnd)))
-
-    def __focusRiotClient(self):
-        is_found = False
-        top_windows = []
-        win32gui.EnumWindows(self.__windowEnumerationHandler, top_windows)
-        for i in top_windows:
-            if "riot client" in i[1].lower():
-                win32gui.ShowWindow(i[0],5)
-                win32gui.SetForegroundWindow(i[0])
-                is_found = True
-                break
-        if not is_found:
-            raise Exception("Riot Client not found")
-
     def addAccount(self, name, username, password, description = ""):
         self.__accounts[name] = {
             "description": description,
@@ -71,15 +52,8 @@ class AccountManager():
         ]
 
     def login(self, name):
-        login_object = LcuLogin()
         credentials = self.__getAccountCredentials(name)
-        login_object.loginRequest(credentials["username"], credentials["password"])
-        try:
-            self.__focusRiotClient()
-        except:
-            print("Riot Client not found")
-            return
-
+        logToLeague(credentials["username"], credentials["password"])
 
 if __name__ == "__main__":
     logger = AccountManager()
