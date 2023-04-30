@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--primary: var(--blue);
+	--secondary: var(--light-1);
+
+	--blue: #1f2145;
+	--blue-light: #63647d;
+
+	--gold: #cda06b;
+	--gold-light: #e1caae;
+	--gold-light-2: #eadfd1;
+
+	--light-1: #f7f5f3;
+	--light-2: #f2ecde;
+
+	--brown: #e0886a;
+	--brown-light: #ddb8ab;
+
+	--dark: #2e2b28;
+}
+
+html {
+	font-family: 'Montserrat', sans-serif;
+	line-height: 1.15;
+	font-size: 100%;
+	-webkit-text-size-adjust: 100%;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-print-color-adjust: exact;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	/* margin: 0; */
+}
+
+::-webkit-scrollbar {
+	width: 0.4rem;
+	height: 0.4rem;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+	margin: 0.4rem 0.4rem;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #d1d1d8;
+	border-radius: 100vw;
+}
+
+::-webkit-scrollbar-corner,
+::-webkit-scrollbar-button {
+	display: none;
+}
+
+html,
+body,
+#__nuxt,
+#__layout {
+	margin: 0;
+	padding: 0;
+
+	font-family: 'Montserrat', sans-serif;
+
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.75;
+
+	text-align: left;
+	color: var(--primary);
+	background: var(--primary);
+
+	min-height: 100vh;
+	min-height: 100dvh;
+
+	min-width: 100%;
+
+	height: 100%;
+	width: 100%;
+
+	scrollbar-color: var(--primary) transparent;
+	scrollbar-width: auto;
+
+	overflow: hidden;
+}
+#__nuxt {
+	display: flex;
+	flex-wrap: nowrap;
+}
