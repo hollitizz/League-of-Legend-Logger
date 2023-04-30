@@ -1,5 +1,5 @@
 import json
-from utils import encrypt, decrypt, logToLeague
+from old.utils import encrypt, decrypt, logToLeague
 
 class AccountManager():
     def __init__(self, password, encrypted):
