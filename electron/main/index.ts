@@ -46,6 +46,7 @@ async function createWindow() {
     width: 800,
     height: 600,
     icon: join(process.env.PUBLIC, 'favicon.ico'),
+    autoHideMenuBar: true,
     webPreferences: {
       preload,
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
@@ -53,6 +54,7 @@ async function createWindow() {
       // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
       nodeIntegration: true,
       contextIsolation: false,
+      webSecurity: false,
     },
   })
 
@@ -100,6 +102,12 @@ app.on('activate', () => {
     createWindow()
   }
 })
+app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
+  // On certificate error we disable default behaviour (stop loading the page)
+  // and we then say "it is all fine - true" to the callback
+  event.preventDefault();
+  callback(true);
+});
 
 // New window example arg: new windows url
 ipcMain.handle('open-win', (_, arg) => {

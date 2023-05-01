@@ -101,7 +101,7 @@ def logToLeague(username, password):
     lockfile = os.path.expanduser('~\\AppData\\Local\\Riot Games\\Riot Client\\Config\\lockfile')
     connection = LeagueConnection(lockfile, timeout=10)
     data = {'username': username, 'password': password, 'persistLogin': False}
-    connection.put('/rso-auth/v1/session/credentials', json=data)
+    connection.request('PUT', '/rso-auth/v1/session/credentials', json=data)
 
 # Example usage
 if __name__ == '__main__':

@@ -3,7 +3,7 @@ from tkinter.messagebox import askyesno
 from AccountManager import AccountManager
 from tkinter import *
 from tkinter import ttk
-from old.utils import ScrollableFrame, genSalt, hashPassword
+from utils import ScrollableFrame, genSalt, hashPassword
 
 class App(Tk):
     def __init__(self):
