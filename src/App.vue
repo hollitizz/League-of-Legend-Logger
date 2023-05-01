@@ -9,8 +9,12 @@ import { computed } from 'vue';
 const accounts = computed(() => getAccountsName());
 
 function sendLogin(name: string) {
-    const account = getAccountByName(name);
-    login(account.username, account.password);
+    try {
+        const account = getAccountByName(name);
+        login(account.username, account.password);
+    } catch (e) {
+        console.log(e);
+    }
 }
 </script>
 <style></style>
