@@ -19,6 +19,6 @@ export function getAccountsName(): string[] {
 export function getAccountByName(name: string): Account {
     const accounts = getAccountList();
     const account = accounts.find(account => account.summoner_name === name);
-    if (!account) throw new Error(`Account ${name} not found`);
+    if (!account) return {} as Account;
     return account;
 }
