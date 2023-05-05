@@ -4,6 +4,9 @@
         @close="isAddingAccount = false"
         :isOpen="isAddingAccount"
     />
+    <Button @click="openSettings" class="button-settings">
+        <img src="./assets/svg/settings.svg" alt="edit" />
+    </Button>
     <Button @click="editAccounts" class="button-edit">
         <img src="./assets/svg/edit.svg" alt="edit" />
     </Button>
@@ -28,6 +31,10 @@ function editAccounts() {
 function addAccount() {
     isAddingAccount.value = true;
 }
+
+function openSettings() {
+    console.log('open settings');
+}
 </script>
 <style lang="scss" scoped>
 .main {
@@ -43,12 +50,16 @@ function addAccount() {
     display: flex;
     align-items: center;
     justify-content: center;
-    &-edit {
+    &-settings {
         top: 3.5rem;
     }
 
-    &-add {
+    &-edit {
         top: 7.5rem;
+    }
+
+    &-add {
+        top: 11.5rem;
     }
 }
 </style>

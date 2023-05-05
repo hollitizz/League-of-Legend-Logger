@@ -1,7 +1,7 @@
 <template>
     <UiModal @close="emits('close')">
         <div class="add-account-modal-content">
-            <UiInputText v-model="name" label="Nom sur league"/>
+            <UiInputText v-model="name" label="Nom du compte"/>
             <UiInputText v-model="username" label="Identifiant" />
             <UiInputPassword v-model="password" label="Mot de passe" />
             <div class="buttons">
