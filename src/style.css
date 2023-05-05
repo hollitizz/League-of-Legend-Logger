@@ -1,13 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 :root {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family: Rubik, sans-serif;
+    --primary: #213547;
+    --secondary: #2e475a;
+    --red: #ff4d4d;
     line-height: 1.5;
     font-weight: 400;
 
     color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
-    --primary: #213547;
-    --secondary: #2e475a;
-    --card: #3a5369;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -49,6 +51,25 @@ body,
 }
 ::-webkit-scrollbar-track-piece {
     background: transparent;
-    margin-top : 10px;
+    margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.select-none {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+img {
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+input,
+button {
+    outline: none;
 }

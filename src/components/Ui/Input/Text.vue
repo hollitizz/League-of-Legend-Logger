@@ -1,0 +1,59 @@
+<template>
+    <div class="text">
+        <label v-if="label" :style="{ maxWidth }" class="label">{{
+            label
+        }}</label>
+        <input
+            class="input"
+            type="text"
+            :value="modelValue"
+            :style="{ maxWidth }"
+        />
+    </div>
+</template>
+
+<script setup lang="ts">
+import { defineProps } from 'vue';
+
+const props = defineProps({
+    modelValue: {
+        type: String,
+        required: true
+    },
+    maxWidth: {
+        type: String,
+        default: '14rem'
+    },
+    label: {
+        type: String,
+        default: ''
+    }
+});
+</script>
+
+<style lang="scss" scoped>
+.text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    .label {
+        width: 100%;
+        font-size: large;
+        font-weight: 600;
+        text-align: left;
+        margin: 0;
+    }
+    .input {
+        width: 100%;
+        border: none;
+        background-color: white;
+        outline: 0.2rem solid var(--primary);
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        font-size: large;
+        font-weight: 600;
+        color: var(--primary);
+    }
+}
+</style>

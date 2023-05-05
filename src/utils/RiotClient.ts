@@ -5,7 +5,7 @@ import https from 'https';
 
 export function login(username: string, password: string): void {
     const [lcu_port, lcu_password, lcu_method] = fs.readFileSync(
-        path.join(process.env.APPDATA, '../Local/Riot\ Games/Riot\ Client/Config/lockfile'),
+        path.join(process.env.APPDATA ?? '', '../Local/Riot\ Games/Riot\ Client/Config/lockfile'),
         'utf-8'
     ).split(':').slice(2);
     if (!lcu_port || !lcu_password || !lcu_method) throw new Error('LCU not found');
