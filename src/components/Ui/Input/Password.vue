@@ -8,13 +8,15 @@
             :type="isShowed ? 'text' : 'password'"
             :value="modelValue"
             :style="{ maxWidth }"
+            @input="emits('update:modelValue', $event.target.value)"
         />
     </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref } from 'vue';
+import { ref } from 'vue';
 
+const emits = defineEmits(['update:modelValue']);
 defineProps({
     modelValue: {
         type: String,

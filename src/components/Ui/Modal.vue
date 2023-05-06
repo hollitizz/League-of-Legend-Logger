@@ -1,7 +1,7 @@
 <!-- create a vue component modal which close when click outside and add a blur effect to the rest of the window -->
 <template>
     <div class="modal" @click="close">
-        <div class="modal-content" @click.stop>
+        <div class="modal-content" :style="{ width, height }" @click.stop>
             <UiButton @click="close" class="button-close" variant="transparent">
                 <img src="../../assets/svg/close.svg" alt="close" />
             </UiButton>
@@ -11,15 +11,24 @@
 </template>
 
 <script lang="ts" setup>
-import { defineEmits } from 'vue';
 import UiButton from './Button.vue';
 
 const emits = defineEmits(['close']);
 
+defineProps({
+    width: {
+        type: String,
+        default: '30rem'
+    },
+    height: {
+        type: String,
+        default: '25rem'
+    }
+});
+
 function close() {
     emits('close');
 }
-
 </script>
 
 <style lang="scss" scoped>
@@ -34,25 +43,23 @@ function close() {
 
     .modal-content {
         position: fixed;
-        width: 30rem;
-        height: 25rem;
         top: 50%;
         left: 50%;
         padding: 1rem;
         transform: translate(-50%, -50%);
         background-color: var(--secondary);
         border-radius: 0.5rem;
+        overflow-y: auto;
     }
 
     .button-close {
-        position: absolute;
+        position: sticky;
         top: 0.5rem;
-        right: 0.5rem;
+        left: calc(100% - 0.5rem);
         display: flex;
         padding: 0;
         align-items: center;
         justify-content: center;
     }
-
 }
 </style>

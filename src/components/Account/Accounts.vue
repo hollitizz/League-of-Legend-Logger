@@ -1,15 +1,35 @@
 <template>
-    <ul class="account-list">
-        <UiCardsRectangle class="card-element" v-for="account in accounts">
-            <Account @update:accounts="reloadAccounts" :isEditMode="isEditMode" :accountName="account" />
-        </UiCardsRectangle>
+    <ul class="account-list drop-zone">
+        <li v-for="(account, index) in accounts">
+            <UiCardsRectangle
+                :draggable="isEditMode"
+                class="card-element"
+                :class="{ 'clickable': isEditMode }"
+                @dragstart="dragStart($event, index)"
+                @dragenter="dragEnter($event, index)"
+                @dragleave="dragLeave($event, index)"
+                @dragover="dragOver($event, index)"
+                @dragend="dragEnd($event, index)"
+                @drop="drop($event, index)"
+            >
+                <AccountAccount
+                    @delete:account="accountStore.deleteAccount"
+                    :isEditMode="isEditMode"
+                    :account="account"
+                />
+            </UiCardsRectangle>
+        </li>
     </ul>
 </template>
 <script setup lang="ts">
-import { getAccountsName, } from '../../utils/AccountsManager';
-import UiCardsRectangle from '../Ui/Cards/Rectangle.vue';
-import Account from './Account.vue';
-import { ref } from 'vue';
+import { useAccountStore } from '../../store/AccountsManager';
+import { storeToRefs } from 'pinia';
+import AccountAccount from './Account.vue';
+import UiCardsRectangle from '../ui/cards/Rectangle.vue';
+
+const accountStore = useAccountStore();
+accountStore.loadAccounts();
+const { accounts } = storeToRefs(accountStore);
 
 defineProps({
     isEditMode: {
@@ -18,10 +38,35 @@ defineProps({
     }
 });
 
-const accounts = ref(getAccountsName() as string[]);
+function dragStart(event: DragEvent, index: number) {
+    event.dataTransfer?.setData('startIndex', index.toString());
+}
 
-function reloadAccounts(accountName: string) {
-    accounts.value = getAccountsName();
+function drop(event: DragEvent, index: number) {
+    const startIndex = parseInt(event.dataTransfer?.getData('startIndex') ?? '-1');
+    if (startIndex === -1) return;
+    accountStore.moveAccount(startIndex, index);
+    event.preventDefault();
+}
+
+function dragEnd(event: DragEvent, index: number) {
+    // console.log('drag end');
+    event.preventDefault();
+}
+
+function dragEnter(event: DragEvent, index: number) {
+    // console.log('drag enter');
+    event.preventDefault();
+}
+
+function dragLeave(event: DragEvent, index: number) {
+    // console.log('drag leave');
+    event.preventDefault();
+}
+
+function dragOver(event: DragEvent, index: number) {
+    // console.log('drag over');
+    event.preventDefault();
 }
 
 </script>
@@ -32,13 +77,19 @@ function reloadAccounts(accountName: string) {
     list-style: none;
     padding: 0;
     margin: 0;
-    overflow:auto;
+    overflow: auto;
 
     .card-element {
         margin: 1rem auto;
         padding: 0;
         height: 10rem;
         width: 45rem;
+    }
+    .clickable {
+        &:hover {
+            cursor: grab;
+            background-color: rgba($color: #000, $alpha: 0.2);
+        }
     }
 }
 </style>

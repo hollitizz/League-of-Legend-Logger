@@ -1,11 +1,13 @@
 <template>
     <UiModal @close="emits('update:modelValue', false)">
         <div class="add-account-modal-content">
-            <UiInputText v-model="name" label="Nom du compte" />
-            <UiInputText v-model="username" label="Identifiant" />
             <UiInputPassword v-model="password" label="Mot de passe" />
+            <UiInputPassword
+                v-model="passwordConfirm"
+                label="Confirmer le mot de passe"
+            />
             <div class="buttons">
-                <UiButton @click="addAccount">Ajouter</UiButton>
+                <UiButton @click="setPassword">Valider</UiButton>
                 <UiButton @click="emits('update:modelValue', false)"
                     >Annuler</UiButton
                 >
@@ -16,27 +18,19 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Account } from '../../types';
-import UiModal from '../ui/Modal.vue';
-import UiInputText from '../ui/input/Text.vue';
-import UiInputPassword from '../ui/input/Password.vue';
-import UiButton from '../ui/Button.vue';
+import UiModal from './ui/Modal.vue';
+import UiInputPassword from './ui/input/Password.vue';
+import UiButton from './ui/Button.vue';
 
-const emits = defineEmits(['update:modelValue', 'add:account']);
-const name = ref('' as string);
-const username = ref('' as string);
+const emits = defineEmits(['update:modelValue', 'set:password']);
+const passwordConfirm = ref('' as string);
 const password = ref('' as string);
 
-function addAccount() {
-    const account = {
-        summoner_name: name.value,
-        username: username.value,
-        password: password.value
-    } as Account;
-    if (!account.summoner_name || !account.username || !account.password) {
+function setPassword() {
+    if (password.value !== passwordConfirm.value) {
         return;
     }
-    emits('add:account', account);
+    emits('set:password', password.value);
     emits('update:modelValue', false);
 }
 </script>

@@ -3,7 +3,7 @@
         <AccountElo class="w-full" :account="account" />
         <AccountName class="w-full" :account="account" />
         <AccountActions
-            @update:accounts="deleteAccount"
+            @delete:account="emits('delete:account', props.account)"
             :isEditMode="isEditMode"
             class="w-full"
             :account="account"
@@ -11,15 +11,15 @@
     </div>
 </template>
 <script setup lang="ts">
-import { getAccountByName } from '../../utils/AccountsManager';
-import { computed } from 'vue';
+import { PropType } from 'vue';
+import { Account } from '../../types';
 import AccountElo from './Elo.vue';
 import AccountName from './Name.vue';
 import AccountActions from './Actions.vue';
 
 const props = defineProps({
-    accountName: {
-        type: String,
+    account: {
+        type: Object as PropType<Account>,
         required: true
     },
     isEditMode: {
@@ -27,12 +27,7 @@ const props = defineProps({
         required: true
     }
 });
-const emits = defineEmits(['update:accounts']);
-const account = computed(() => getAccountByName(props.accountName));
-
-function deleteAccount() {
-    emits('update:accounts');
-}
+const emits = defineEmits(['delete:account']);
 </script>
 <style lang="scss" scoped>
 .account {

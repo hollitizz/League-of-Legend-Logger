@@ -8,12 +8,14 @@
             type="text"
             :value="modelValue"
             :style="{ maxWidth }"
+            @input="emits('update:modelValue', $event.target.value)"
         />
     </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
+
+const emits = defineEmits(['update:modelValue']);
 
 const props = defineProps({
     modelValue: {

@@ -1,25 +1,54 @@
 <template>
     <div class="mx-auto flex gap-1 select-none">
         <UiCardCircle class="circle-elo">
-            <img :src="`./src/assets/rank/${9}.png`" alt="">
+            <img :src="`./src/assets/rank/${account.tier}.png`" alt="">
         </UiCardCircle>
         <div class="text-center m-auto">
-            <h3 class="m-0">Master</h3>
-            <h3 class="m-0">401 LP</h3>
+            <h3 class="m-0">{{ tier + rank }}</h3>
+            <h3 class="m-0">{{ account.lp }} LP</h3>
         </div>
     </div>
 </template>
 <script setup lang="ts">
+import { PropType, computed } from "vue";
 import { Account } from "../../types";
-import { PropType } from "vue";
-import UiCardCircle from "../Ui/Cards/Circle.vue";
+import UiCardCircle from "../ui/cards/Circle.vue";
 
 
-defineProps({
+const props = defineProps({
     account: {
         type: Object as PropType<Account>,
         required: true
     }
+});
+
+const correspondingTier = [
+    "Unranked",
+    "Iron",
+    "Bronze",
+    "Silver",
+    "Gold",
+    "Platinum",
+    "Diamond",
+    "Master",
+    "Grandmaster",
+    "Challenger"
+]
+
+const correspondingRank = [
+    "0",
+    "I",
+    "II",
+    "III",
+    "IV"
+]
+
+const tier = computed(() => {
+    return correspondingTier[props.account.tier];
+});
+
+const rank = computed(() => {
+    return !props.account.tier || props.account.tier > 6  ? "" : ` ${correspondingRank[props.account.rank]}`;
 });
 
 </script>

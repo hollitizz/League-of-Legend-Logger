@@ -7,20 +7,19 @@
             <UiButton v-if="isEditMode" @click="deleteAccount" class="button" variant="transparent">
                 <img src="../../assets/svg/delete.svg" alt="delete" />
             </UiButton>
-            <UiButton v-if="isEditMode" @click="" class="button" variant="transparent">
+            <div v-if="isEditMode" @click="" class="button" variant="transparent">
                 <img src="../../assets/svg/drag.svg" alt="drag" />
-            </UiButton>
+            </div>
         </div>
     </div>
 </template>
 <script setup lang="ts">
 import { login } from '../../utils/RiotClient';
-import { delAccount } from '../../utils/AccountsManager';
-import { Account } from '../../types';
 import { PropType } from 'vue';
-import UiButton from '../Ui/Button.vue';
+import { Account } from '../../types';
+import UiButton from '../ui/Button.vue';
 
-const emits = defineEmits(['update:accounts']);
+const emits = defineEmits(['delete:account']);
 
 const props = defineProps({
     account: {
@@ -43,8 +42,7 @@ function sendLogin() {
 
 function deleteAccount() {
     try {
-        delAccount(props.account);
-        emits('update:accounts');
+        emits('delete:account', props.account);
     } catch (e) {
         console.log(e);
     }

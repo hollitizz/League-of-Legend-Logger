@@ -1,28 +1,40 @@
 <template>
-    <AddAccount
+    <AccountAddAccount
         v-if="isAddingAccount"
-        @close="isAddingAccount = false"
-        :isOpen="isAddingAccount"
+        @add:account="accountStore.addAccount"
+        v-model="isAddingAccount"
     />
-    <Button @click="openSettings" class="button-settings">
+    <Settings
+        v-if="isSettingsOpen"
+        v-model="isSettingsOpen"
+        :isOpen="isSettingsOpen"
+    />
+    <UiButton @click="openSettings" class="button-settings">
         <img src="./assets/svg/settings.svg" alt="edit" />
-    </Button>
-    <Button @click="editAccounts" class="button-edit">
+    </UiButton>
+    <UiButton @click="editAccounts" class="button-edit">
         <img src="./assets/svg/edit.svg" alt="edit" />
-    </Button>
-    <Button @click="addAccount" class="button-add">
+    </UiButton>
+    <UiButton @click="addAccount" class="button-add">
         <img src="./assets/svg/add.svg" alt="add" />
-    </Button>
-    <Accounts class="main" :isEditMode="isEditMode" />
+    </UiButton>
+    <AccountAccounts class="main" :isEditMode="isEditMode" />
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
-import Accounts from './components/Account/Accounts.vue';
-import Button from './components/Ui/Button.vue';
-import AddAccount from './components/Account/addAccount.vue';
+import { useAccountStore } from './store/AccountsManager';
+import AccountAccounts from './components/account/Accounts.vue';
+import UiButton from './components/ui/Button.vue';
+import AccountAddAccount from './components/account/AddAccount.vue';
+import Settings from './components/Settings.vue';
+
 
 const isEditMode = ref(false);
 const isAddingAccount = ref(false);
+const isSettingsOpen = ref(false);
+
+const accountStore = useAccountStore();
+accountStore.loadAccounts();
 
 function editAccounts() {
     isEditMode.value = !isEditMode.value;
@@ -33,7 +45,7 @@ function addAccount() {
 }
 
 function openSettings() {
-    console.log('open settings');
+    isSettingsOpen.value = true;
 }
 </script>
 <style lang="scss" scoped>
