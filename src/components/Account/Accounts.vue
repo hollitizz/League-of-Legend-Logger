@@ -13,7 +13,7 @@
                 @drop="drop($event, index)"
             >
                 <AccountAccount
-                    @delete:account="accountStore.deleteAccount"
+                    @delete:account="emits('delete:account', account)"
                     :isEditMode="isEditMode"
                     :account="account"
                 />
@@ -22,18 +22,20 @@
     </ul>
 </template>
 <script setup lang="ts">
-import { useAccountStore } from '../../store/AccountsManager';
-import { storeToRefs } from 'pinia';
+import { Account } from '../../types';
 import AccountAccount from './Account.vue';
 import UiCardsRectangle from '../ui/cards/Rectangle.vue';
+import { PropType } from 'vue';
 
-const accountStore = useAccountStore();
-accountStore.loadAccounts();
-const { accounts } = storeToRefs(accountStore);
+const emits = defineEmits(['update:accounts', 'delete:account']);
 
 defineProps({
     isEditMode: {
         type: Boolean,
+        required: true
+    },
+    accounts: {
+        type: Array as PropType<Account[]>,
         required: true
     }
 });
@@ -45,7 +47,7 @@ function dragStart(event: DragEvent, index: number) {
 function drop(event: DragEvent, index: number) {
     const startIndex = parseInt(event.dataTransfer?.getData('startIndex') ?? '-1');
     if (startIndex === -1) return;
-    accountStore.moveAccount(startIndex, index);
+    emits('update:accounts', startIndex, index);
     event.preventDefault();
 }
 

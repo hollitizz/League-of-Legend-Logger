@@ -51,7 +51,12 @@
     <SetPassword
         v-if="isSettingPassword"
         v-model="isSettingPassword"
-        @set:password="settingsStore.setPassword"
+        @set:password="settingsStore.setPassword($event); emits('update:encryption', true, $event)"
+    />
+    <AskPassword
+        v-if="isAskingPassword"
+        v-model="isAskingPassword"
+        @send:password="disableEncryption"
     />
 </template>
 
@@ -64,14 +69,16 @@ import { useSettingsStore } from '../store/Settings';
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import SetPassword from './SetPassword.vue';
+import AskPassword from './AskPassword.vue';
 
 const settingsStore = useSettingsStore();
 settingsStore.loadSettings();
 const { settings } = storeToRefs(settingsStore);
 
-const emits = defineEmits(['update:modelValue']);
+const emits = defineEmits(['update:modelValue', 'update:encryption']);
 
 const isSettingPassword = ref(false);
+const isAskingPassword = ref(false);
 
 const oldPassword = ref('' as string);
 const newPassword = ref('' as string);
@@ -89,7 +96,7 @@ function handleEncryptionButton() {
     if (!settings.value.isEncrypted) {
         isSettingPassword.value = true;
     } else {
-        settingsStore.deletePassword("");
+        isAskingPassword.value = true;
     }
 }
 
@@ -98,6 +105,11 @@ function changePassword() {
         return;
     }
     settingsStore.changePassword(oldPassword.value, newPassword.value);
+}
+
+function disableEncryption(password: string) {
+    settingsStore.deletePassword(password);
+    emits('update:encryption', false)
 }
 
 </script>
