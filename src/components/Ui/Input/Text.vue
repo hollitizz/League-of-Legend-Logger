@@ -8,7 +8,7 @@
             type="text"
             :value="modelValue"
             :style="{ maxWidth }"
-            @input="emits('update:modelValue', $event.target.value)"
+            @input="handleInput"
         />
     </div>
 </template>
@@ -31,6 +31,11 @@ const props = defineProps({
         default: ''
     }
 });
+
+function handleInput(event: Event) {
+    const target = event?.target as HTMLInputElement;
+    emits('update:modelValue', target?.value);
+}
 </script>
 
 <style lang="scss" scoped>

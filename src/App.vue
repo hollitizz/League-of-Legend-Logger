@@ -1,5 +1,9 @@
 <template>
-    <Main v-if="isLogged || !settings.isEncrypted" :password="password" :isEncrypted="settings.isEncrypted" />
+    <Main
+        v-if="isLogged || !isEncrypted"
+        :password="password"
+        :isEncrypted="isEncrypted"
+    />
     <Login v-else v-model="password" />
 </template>
 <script setup lang="ts">
@@ -14,6 +18,10 @@ settingsStore.loadSettings();
 const { settings } = storeToRefs(settingsStore);
 
 const isLogged = ref(false);
+const isEncrypted = ref(false);
+if (settings.value.isEncrypted) {
+    isEncrypted.value = true;
+}
 const password = ref('' as string);
 
 watch(password, () => {
@@ -21,7 +29,5 @@ watch(password, () => {
         isLogged.value = true;
     }
 });
-
 </script>
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

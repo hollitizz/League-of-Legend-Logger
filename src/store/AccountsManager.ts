@@ -11,34 +11,39 @@ export const useAccountStore = defineStore('accountsStore', () => {
 
     function loadAccounts(): void {
         if (isEncrypted.value && !password.value) throw new Error('Password is required');
-        const file = fs.readFileSync('src/accounts.lal', 'utf-8');
-        console.log(password.value, isEncrypted.value);
-        if (isEncrypted.value) {
-            accounts.value = encryptpwd.decryptJSON(
-                file,
-                password.value
-            ).accounts;
-        } else {
-            accounts.value = JSON.parse(file).accounts;
+        let file = null;
+        try {
+            file = fs.readFileSync('accounts.lal', 'utf-8');
+        } catch (e) {
+            fs.writeFileSync('accounts.lal', JSON.stringify({ accounts: [] }, null, 4));
+            file = fs.readFileSync('accounts.lal', 'utf-8');
         }
+        // if (isEncrypted.value) {
+        //     accounts.value = encryptpwd.decryptJSON(
+        //         file,
+        //         password.value
+        //     ).accounts;
+        // } else {
+            accounts.value = JSON.parse(file).accounts;
+        // }
     }
 
     function saveAccounts(): void {
         if (isEncrypted.value && !password.value) throw new Error('Password is required');
-        if (isEncrypted.value) {
+        // if (isEncrypted.value) {
+        //     fs.writeFileSync(
+        //         'src/accounts.lal',
+        //         encryptpwd.encryptJSON(
+        //             { accounts: accounts.value },
+        //             password.value
+        //         )
+        //     );
+        // } else {
             fs.writeFileSync(
-                'src/accounts.lal',
-                encryptpwd.encryptJSON(
-                    { accounts: accounts.value },
-                    password.value
-                )
-            );
-        } else {
-            fs.writeFileSync(
-                'src/accounts.lal',
+                'accounts.lal',
                 JSON.stringify({ accounts: accounts.value }, null, 4)
             );
-        }
+        // }
     }
 
     function addAccount(account: Account): void {
@@ -46,6 +51,10 @@ export const useAccountStore = defineStore('accountsStore', () => {
             return;
         accounts.value.push({ ...account, tier: 0, rank: 0, lp: 0 });
         saveAccounts();
+    }
+
+    function addAccounts(accounts: Account[]): void {
+        accounts.forEach(acc => addAccount(acc));
     }
 
     function deleteAccount(account: Account): void {
@@ -72,6 +81,7 @@ export const useAccountStore = defineStore('accountsStore', () => {
         saveAccounts,
         addAccount,
         deleteAccount,
-        moveAccount
+        moveAccount,
+        addAccounts
     };
 });

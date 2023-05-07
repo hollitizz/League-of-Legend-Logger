@@ -67,13 +67,26 @@ import UiInputPassword from './ui/input/Password.vue';
 import UiCardsRectangle from './ui/cards/Rectangle.vue';
 import { useSettingsStore } from '../store/Settings';
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { PropType, ref } from 'vue';
 import SetPassword from './SetPassword.vue';
 import AskPassword from './AskPassword.vue';
+import { Account } from '../types';
+import { ipcRenderer } from 'electron';
 
 const settingsStore = useSettingsStore();
 settingsStore.loadSettings();
 const { settings } = storeToRefs(settingsStore);
+
+const props = defineProps({
+    modelValue: {
+        type: Boolean,
+        required: true
+    },
+    accounts: {
+        type: Array as PropType<Account[]>,
+        required: true
+    }
+});
 
 const emits = defineEmits(['update:modelValue', 'update:encryption']);
 
@@ -85,11 +98,12 @@ const newPassword = ref('' as string);
 const newPasswordConfirm = ref('' as string);
 
 function importAccounts() {
-    console.log('import');
+    navigator.clipboard.writeText(JSON.stringify(props.accounts, null, 4));
 }
 
 function exportAccounts() {
-    console.log('export');
+    console.log(props.accounts);
+    ipcRenderer.send('export-accounts', JSON.stringify(props.accounts, null, 4));
 }
 
 function handleEncryptionButton() {

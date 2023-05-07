@@ -8,7 +8,7 @@
             :type="isShowed ? 'text' : 'password'"
             :value="modelValue"
             :style="{ maxWidth }"
-            @input="emits('update:modelValue', $event.target.value)"
+            @input="handleInput"
         />
     </div>
 </template>
@@ -31,7 +31,10 @@ defineProps({
         default: ''
     }
 });
-
+function handleInput(event: Event) {
+    const target = event?.target as HTMLInputElement;
+    emits('update:modelValue', target?.value);
+}
 const isShowed = ref(false);
 </script>
 

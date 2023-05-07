@@ -8,9 +8,15 @@ export const useSettingsStore = defineStore('settings', () => {
     const settings = ref({} as Settings);
 
     function loadSettings() {
-        const settingsString = fs.readFileSync('src/config.lal', 'utf-8');
-        settings.value = JSON.parse(settingsString);
-        if (!settings.value.isFirstTime) settings.value.isFirstTime = false;
+        let file = null;
+        try {
+            file = fs.readFileSync('config.lal', 'utf-8');
+        } catch (e) {
+            fs.writeFileSync('config.lal', JSON.stringify({ isFirstTime: true, isEncrypted: false, password: '' }, null, 4));
+            file = fs.readFileSync('config.lal', 'utf-8');
+        }
+        settings.value = JSON.parse(file);
+        if (!settings.value.isFirstTime) settings.value.isFirstTime = true;
         if (!settings.value.isEncrypted) settings.value.isEncrypted = false;
         if (!settings.value.password) settings.value.password = '';
     }
@@ -20,7 +26,7 @@ export const useSettingsStore = defineStore('settings', () => {
             settings.value.isFirstTime = false;
         }
         fs.writeFileSync(
-            'src/config.lal',
+            'config.lal',
             JSON.stringify(settings.value, null, 4)
         );
     }

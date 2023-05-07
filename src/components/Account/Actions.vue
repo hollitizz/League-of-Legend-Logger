@@ -22,12 +22,12 @@ import UiButton from '../ui/Button.vue';
 const emits = defineEmits(['delete:account']);
 
 const props = defineProps({
-    account: {
-        type: Object as PropType<Account>,
-        required: true
-    },
     isEditMode: {
         type: Boolean,
+        required: true
+    },
+    account: {
+        type: Object as PropType<Account>,
         required: true
     }
 });

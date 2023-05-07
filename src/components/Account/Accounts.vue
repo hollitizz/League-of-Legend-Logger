@@ -13,7 +13,7 @@
                 @drop="drop($event, index)"
             >
                 <AccountAccount
-                    @delete:account="emits('delete:account', account)"
+                    @delete:account="handleDeleteAccount"
                     :isEditMode="isEditMode"
                     :account="account"
                 />
@@ -29,7 +29,7 @@ import { PropType } from 'vue';
 
 const emits = defineEmits(['update:accounts', 'delete:account']);
 
-defineProps({
+const props = defineProps({
     isEditMode: {
         type: Boolean,
         required: true
@@ -40,7 +40,12 @@ defineProps({
     }
 });
 
+function handleDeleteAccount(account: Account) {
+    emits('delete:account', account);
+}
+
 function dragStart(event: DragEvent, index: number) {
+    if (!props.isEditMode) return;
     event.dataTransfer?.setData('startIndex', index.toString());
 }
 

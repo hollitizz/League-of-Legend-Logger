@@ -1,6 +1,14 @@
-import { app, BrowserWindow, shell, ipcMain, globalShortcut } from 'electron';
+import {
+    app,
+    BrowserWindow,
+    shell,
+    ipcMain,
+    globalShortcut,
+    dialog
+} from 'electron';
 import { release } from 'node:os';
 import { join } from 'node:path';
+import fs from 'fs';
 
 // The built directory structure
 //
@@ -14,7 +22,9 @@ import { join } from 'node:path';
 //
 process.env.DIST_ELECTRON = join(__dirname, '..');
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist');
-process.env.PUBLIC = process.env.VITE_DEV_SERVER_URL ? join(process.env.DIST_ELECTRON, '../public') : process.env.DIST;
+process.env.PUBLIC = process.env.VITE_DEV_SERVER_URL
+    ? join(process.env.DIST_ELECTRON, '../public')
+    : process.env.DIST;
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -68,7 +78,10 @@ async function createWindow() {
 
     // Test actively push message to the Electron-Renderer
     win.webContents.on('did-finish-load', () => {
-        win?.webContents.send('main-process-message', new Date().toLocaleString());
+        win?.webContents.send(
+            'main-process-message',
+            new Date().toLocaleString()
+        );
     });
 
     // Make all links open with the browser, not with the application
@@ -81,12 +94,23 @@ async function createWindow() {
 
 app.whenReady().then(() => {
     if (!process.env.VITE_DEV_SERVER_URL) {
-        globalShortcut.register('Alt+CommandOrControl+I', () => {});
         globalShortcut.register('F12', () => {});
         globalShortcut.register('CommandOrControl+R', () => {});
         globalShortcut.register('CommandOrControl+Shift+R', () => {});
+        // globalShortcut.register('Alt+CommandOrControl+I', () => { })
+        // globalShortcut.register('Shift+CommandOrControl+I', () => { })
     }
     createWindow();
+    ipcMain.on('export-accounts', (event, file: string) => {
+        const [path] = dialog.showOpenDialogSync({
+            defaultPath: process.env.USERPROFILE + '\\Downloads\\accounts.lal'
+        });
+        if (path) {
+            fs.writeFileSync(path,
+                file
+            );
+        }
+    });
 });
 
 app.on('window-all-closed', () => {
@@ -110,12 +134,15 @@ app.on('activate', () => {
         createWindow();
     }
 });
-app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
-    // On certificate error we disable default behaviour (stop loading the page)
-    // and we then say "it is all fine - true" to the callback
-    event.preventDefault();
-    callback(true);
-});
+app.on(
+    'certificate-error',
+    (event, webContents, url, error, certificate, callback) => {
+        // On certificate error we disable default behaviour (stop loading the page)
+        // and we then say "it is all fine - true" to the callback
+        event.preventDefault();
+        callback(true);
+    }
+);
 
 // New window example arg: new windows url
 ipcMain.handle('open-win', (_, arg) => {

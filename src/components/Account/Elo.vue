@@ -1,7 +1,7 @@
 <template>
     <div class="mx-auto flex gap-1 select-none">
         <UiCardCircle class="circle-elo">
-            <img :src="`./src/assets/rank/${account.tier}.png`" alt="">
+            <img :src="tierImg" alt="rank">
         </UiCardCircle>
         <div class="text-center m-auto">
             <h3 class="m-0">{{ tier + rank }}</h3>
@@ -13,7 +13,16 @@
 import { PropType, computed } from "vue";
 import { Account } from "../../types";
 import UiCardCircle from "../ui/cards/Circle.vue";
-
+import ChallengerImg from "../../assets/rank/9.png";
+import GrandmasterImg from "../../assets/rank/8.png";
+import MasterImg from "../../assets/rank/7.png";
+import DiamondImg from "../../assets/rank/5.png";
+import PlatinumImg from "../../assets/rank/4.png";
+import GoldImg from "../../assets/rank/3.png";
+import SilverImg from "../../assets/rank/2.png";
+import BronzeImg from "../../assets/rank/1.png";
+import IronImg from "../../assets/rank/0.png";
+import UnrankedImg from "../../assets/rank/0.png";
 
 const props = defineProps({
     account: {
@@ -21,6 +30,19 @@ const props = defineProps({
         required: true
     }
 });
+
+const img = [
+    UnrankedImg,
+    IronImg,
+    BronzeImg,
+    SilverImg,
+    GoldImg,
+    PlatinumImg,
+    DiamondImg,
+    MasterImg,
+    GrandmasterImg,
+    ChallengerImg
+]
 
 const correspondingTier = [
     "Unranked",
@@ -45,6 +67,10 @@ const correspondingRank = [
 
 const tier = computed(() => {
     return correspondingTier[props.account.tier];
+});
+
+const tierImg = computed(() => {
+    return img[props.account.tier];
 });
 
 const rank = computed(() => {
