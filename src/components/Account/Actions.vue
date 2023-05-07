@@ -46,7 +46,7 @@ async function sendLogin() {
     let res = null
     try {
         res = await riotAPI.login(props.account.username, props.account.password);
-    } catch (error) {
+    } catch (error: any) {
         if (error.response.status === 400) {
             throw new Error("Un compte est déjà connecté");
         } else if (error.response.status === 404) {
