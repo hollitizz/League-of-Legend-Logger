@@ -97,18 +97,27 @@ app.whenReady().then(() => {
         globalShortcut.register('F12', () => {});
         globalShortcut.register('CommandOrControl+R', () => {});
         globalShortcut.register('CommandOrControl+Shift+R', () => {});
-        // globalShortcut.register('Alt+CommandOrControl+I', () => { })
+        globalShortcut.register('Alt+CommandOrControl+I', () => { })
         // globalShortcut.register('Shift+CommandOrControl+I', () => { })
     }
     createWindow();
     ipcMain.on('export-accounts', (event, file: string) => {
-        const [path] = dialog.showOpenDialogSync({
+        const path = dialog.showOpenDialogSync({
             defaultPath: process.env.USERPROFILE + '\\Downloads\\accounts.lal'
         });
         if (path) {
-            fs.writeFileSync(path,
+            fs.writeFileSync(path[0],
                 file
             );
+        }
+    });
+    ipcMain.on('import-accounts', (event) => {
+        const path = dialog.showOpenDialogSync({
+            defaultPath: process.env.USERPROFILE + '\\Downloads\\accounts.lal'
+        });
+        if (path) {
+            const file = fs.readFileSync(path[0], 'utf8');
+            event.reply('import-accounts-reply', JSON.parse(file));
         }
     });
 });

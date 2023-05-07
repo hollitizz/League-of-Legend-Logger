@@ -88,7 +88,7 @@ const props = defineProps({
     }
 });
 
-const emits = defineEmits(['update:modelValue', 'update:encryption']);
+const emits = defineEmits(['update:modelValue', 'update:encryption', 'add:accounts']);
 
 const isSettingPassword = ref(false);
 const isAskingPassword = ref(false);
@@ -98,11 +98,13 @@ const newPassword = ref('' as string);
 const newPasswordConfirm = ref('' as string);
 
 function importAccounts() {
-    navigator.clipboard.writeText(JSON.stringify(props.accounts, null, 4));
+    ipcRenderer.send('import-accounts');
+    ipcRenderer.on('import-accounts-reply', (event, accounts) => {
+        emits('add:accounts', accounts)
+    });
 }
 
 function exportAccounts() {
-    console.log(props.accounts);
     ipcRenderer.send('export-accounts', JSON.stringify(props.accounts, null, 4));
 }
 
@@ -116,7 +118,7 @@ function handleEncryptionButton() {
 
 function changePassword() {
     if (newPassword.value !== newPasswordConfirm.value) {
-        return;
+        throw new Error('Les nouveaux mots de passe ne correspondent pas');
     }
     settingsStore.changePassword(oldPassword.value, newPassword.value);
 }

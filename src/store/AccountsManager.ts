@@ -10,40 +10,49 @@ export const useAccountStore = defineStore('accountsStore', () => {
     const isEncrypted = ref<boolean>(false);
 
     function loadAccounts(): void {
-        if (isEncrypted.value && !password.value) throw new Error('Password is required');
+        if (isEncrypted.value && !password.value)
+            throw new Error(
+                'Impossible de décrypter les comptes sans mot de passe'
+            );
         let file = null;
         try {
             file = fs.readFileSync('accounts.lal', 'utf-8');
         } catch (e) {
-            fs.writeFileSync('accounts.lal', JSON.stringify({ accounts: [] }, null, 4));
+            fs.writeFileSync(
+                'accounts.lal',
+                JSON.stringify({ accounts: [] }, null, 4)
+            );
             file = fs.readFileSync('accounts.lal', 'utf-8');
         }
-        // if (isEncrypted.value) {
-        //     accounts.value = encryptpwd.decryptJSON(
-        //         file,
-        //         password.value
-        //     ).accounts;
-        // } else {
+        if (isEncrypted.value) {
+            accounts.value = encryptpwd.decryptJSON(
+                file,
+                password.value
+            ).accounts;
+        } else {
             accounts.value = JSON.parse(file).accounts;
-        // }
+        }
     }
 
     function saveAccounts(): void {
-        if (isEncrypted.value && !password.value) throw new Error('Password is required');
-        // if (isEncrypted.value) {
-        //     fs.writeFileSync(
-        //         'src/accounts.lal',
-        //         encryptpwd.encryptJSON(
-        //             { accounts: accounts.value },
-        //             password.value
-        //         )
-        //     );
-        // } else {
+        if (isEncrypted.value && !password.value)
+            throw new Error(
+                "Impossible d'encrypter les comptes sans mot de passe"
+            );
+        if (isEncrypted.value) {
+            fs.writeFileSync(
+                'accounts.lal',
+                encryptpwd.encryptJSON(
+                    { accounts: accounts.value },
+                    password.value
+                )
+            );
+        } else {
             fs.writeFileSync(
                 'accounts.lal',
                 JSON.stringify({ accounts: accounts.value }, null, 4)
             );
-        // }
+        }
     }
 
     function addAccount(account: Account): void {
@@ -53,8 +62,25 @@ export const useAccountStore = defineStore('accountsStore', () => {
         saveAccounts();
     }
 
-    function addAccounts(accounts: Account[]): void {
-        accounts.forEach(acc => addAccount(acc));
+    function importAccounts(inAccounts: Account[]): void {
+        inAccounts.forEach(inAcc => {
+            if (!inAcc.summoner_name || !inAcc.username || !inAcc.password)
+                return;
+            if (
+                accounts.value.find(
+                    acc =>
+                        inAcc.summoner_name === acc.summoner_name &&
+                        inAcc.username === acc.username &&
+                        inAcc.password === acc.password
+                )
+            )
+                return;
+            if (inAcc.tier === undefined) inAcc.tier = 0;
+            if (inAcc.rank === undefined) inAcc.rank = 0;
+            if (inAcc.lp === undefined) inAcc.lp = 0;
+            accounts.value.push({ ...inAcc });
+        });
+        saveAccounts();
     }
 
     function deleteAccount(account: Account): void {
@@ -82,6 +108,6 @@ export const useAccountStore = defineStore('accountsStore', () => {
         addAccount,
         deleteAccount,
         moveAccount,
-        addAccounts
+        importAccounts
     };
 });

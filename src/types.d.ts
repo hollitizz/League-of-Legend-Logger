@@ -35,3 +35,10 @@ export interface RankedStats {
     warnings: null;
     wins: number;
 }
+
+export class RequestError extends Error {
+    constructor(message: string, status: number) {
+        super(message);
+        this.response = {status: status};
+    }
+}

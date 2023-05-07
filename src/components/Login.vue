@@ -1,6 +1,10 @@
 <template>
     <div class="login">
-        <UiInputPassword v-model="password" label="Mot de passe" />
+        <UiInputPassword
+            v-model="password"
+            @enter="sendPassword"
+            label="Mot de passe"
+        />
         <UiButton @click="sendPassword">Connexion</UiButton>
     </div>
 </template>

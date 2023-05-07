@@ -9,13 +9,14 @@
             :value="modelValue"
             :style="{ maxWidth }"
             @input="handleInput"
+            @keydown.enter.prevent="emits('enter')"
         />
     </div>
 </template>
 
 <script setup lang="ts">
 
-const emits = defineEmits(['update:modelValue']);
+const emits = defineEmits(['update:modelValue', 'enter']);
 
 const props = defineProps({
     modelValue: {

@@ -2,7 +2,6 @@
     <AccountAddAccount
         v-if="isAddingAccount"
         @add:account="accountStore.addAccount"
-        @add:accounts="accountStore.addAccounts"
         v-model="isAddingAccount"
     />
     <Settings
@@ -10,6 +9,7 @@
         v-model="isSettingsOpen"
         :accounts="accounts"
         @update:encryption="changeEncryption"
+        @add:accounts="accountStore.importAccounts"
     />
     <UiButton @click="openSettings" class="button-settings">
         <img src="../assets/svg/settings.svg" alt="edit" />

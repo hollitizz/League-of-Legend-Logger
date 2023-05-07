@@ -3,7 +3,7 @@
         <div class="add-account-modal-content">
             <UiInputText v-model="name" label="Nom du compte" />
             <UiInputText v-model="username" label="Identifiant" />
-            <UiInputPassword v-model="password" label="Mot de passe" />
+            <UiInputPassword @enter="addAccount" v-model="password" label="Mot de passe" />
             <div class="buttons">
                 <UiButton @click="addAccount">Ajouter</UiButton>
                 <UiButton @click="emits('update:modelValue', false)"
@@ -34,7 +34,7 @@ function addAccount() {
         password: password.value
     } as Account;
     if (!account.summoner_name || !account.username || !account.password) {
-        return;
+        throw new Error("Un des champs n'est pas rempli");
     }
     emits('add:account', account);
     emits('update:modelValue', false);
@@ -44,7 +44,7 @@ function addAccount() {
 <style lang="scss" scoped>
 .add-account-modal-content {
     width: 100%;
-    height: 100%;
+    height: 90%;
     display: flex;
     flex-direction: column;
     align-items: center;

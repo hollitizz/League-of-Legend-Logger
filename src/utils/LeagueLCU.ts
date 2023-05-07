@@ -4,7 +4,7 @@ import { RankedStats } from '../types';
 import axios from 'axios';
 import https from 'https';
 
-export const useLeagueLCUStore = () => {
+export const useLeagueLCURequests = () => {
     const clientName = ref<string>('');
     const pid = ref<string>('');
     const port = ref<string>('');
@@ -28,7 +28,7 @@ export const useLeagueLCUStore = () => {
             method.value
         ] = fs
             .readFileSync(
-                `${process.env.SystemDrive}/Riot Games/League of Legends/lockfile`,
+                `${process.env['SystemDrive']}/Riot Games/League of Legends/lockfile`,
                 'utf-8'
             )
             .split(':');

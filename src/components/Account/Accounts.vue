@@ -50,6 +50,7 @@ function dragStart(event: DragEvent, index: number) {
 }
 
 function drop(event: DragEvent, index: number) {
+    if (!props.isEditMode) return;
     const startIndex = parseInt(event.dataTransfer?.getData('startIndex') ?? '-1');
     if (startIndex === -1) return;
     emits('update:accounts', startIndex, index);

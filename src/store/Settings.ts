@@ -36,32 +36,30 @@ export const useSettingsStore = defineStore('settings', () => {
         settings.value.password = bcrypt.hashSync(password, salt);
         settings.value.isEncrypted = true;
         saveSettings();
-        console.log('success');
     }
 
     function changePassword(oldPassword: string, password: string) {
         if (bcrypt.compareSync(oldPassword, settings.value.password ?? '')) {
             setPassword(password);
         } else {
-            throw new Error('Wrong password');
+            throw new Error('Mauvais mot de passe');
         }
     }
 
     function checkPassword(password: string) {
         if (!bcrypt.compareSync(password, settings.value.password ?? '')) {
-            throw new Error('Wrong password');
+            throw new Error('Mauvais mot de passe');
         }
         return true;
     }
 
     function deletePassword(password: string) {
         if (!bcrypt.compareSync(password, settings.value.password ?? '')) {
-            throw new Error('Wrong password');
+            throw new Error('Mauvais mot de passe');
         }
         settings.value.password = '';
         settings.value.isEncrypted = false;
         saveSettings();
-        console.log('success');
     }
 
     return {

@@ -1,9 +1,9 @@
 <template>
-    <div class="mx-auto flex gap-1 select-none">
+    <div class="mx-auto flex gap-1 select-none relative">
         <UiCardCircle class="circle-elo">
             <img :src="tierImg" alt="rank">
         </UiCardCircle>
-        <div class="text-center m-auto">
+        <div class="text-center m-auto rank-text">
             <h3 class="m-0">{{ tier + rank }}</h3>
             <h3 class="m-0">{{ account.lp }} LP</h3>
         </div>
@@ -16,12 +16,12 @@ import UiCardCircle from "../ui/cards/Circle.vue";
 import ChallengerImg from "../../assets/rank/9.png";
 import GrandmasterImg from "../../assets/rank/8.png";
 import MasterImg from "../../assets/rank/7.png";
-import DiamondImg from "../../assets/rank/5.png";
-import PlatinumImg from "../../assets/rank/4.png";
-import GoldImg from "../../assets/rank/3.png";
-import SilverImg from "../../assets/rank/2.png";
-import BronzeImg from "../../assets/rank/1.png";
-import IronImg from "../../assets/rank/0.png";
+import DiamondImg from "../../assets/rank/6.png";
+import PlatinumImg from "../../assets/rank/5.png";
+import GoldImg from "../../assets/rank/4.png";
+import SilverImg from "../../assets/rank/3.png";
+import BronzeImg from "../../assets/rank/2.png";
+import IronImg from "../../assets/rank/1.png";
 import UnrankedImg from "../../assets/rank/0.png";
 
 const props = defineProps({
@@ -80,13 +80,20 @@ const rank = computed(() => {
 </script>
 <style lang="scss" scoped>
 .circle-elo {
+    position: absolute;
     height: 6rem;
     width: 6rem;
+    left: 0.8rem;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: var(--primary);
 }
+
+.rank-text {
+    margin-left: 8.4rem;
+}
+
 .mx-auto {
     margin-left: auto;
     margin-right: auto;

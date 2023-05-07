@@ -1,4 +1,3 @@
-<!-- create a vue component modal which close when click outside and add a blur effect to the rest of the window -->
 <template>
     <div class="modal" @click="close">
         <div class="modal-content" :style="{ width, height }" @click.stop>

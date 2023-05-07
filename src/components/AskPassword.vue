@@ -1,7 +1,7 @@
 <template>
     <UiModal @close="emits('update:modelValue', false)">
         <div class="add-account-modal-content">
-            <UiInputPassword v-model="password" label="Mot de passe" />
+            <UiInputPassword v-model="password" @enter="sendPassword" label="Mot de passe" />
             <div class="buttons">
                 <UiButton @click="sendPassword">Valider</UiButton>
                 <UiButton @click="emits('update:modelValue', false)"
@@ -22,6 +22,9 @@ const emits = defineEmits(['update:modelValue', 'send:password']);
 const password = ref('' as string);
 
 function sendPassword() {
+    if (!password.value) {
+        throw new Error('Le mot de passe est vide');
+    }
     emits('send:password', password.value);
     emits('update:modelValue', false);
 }

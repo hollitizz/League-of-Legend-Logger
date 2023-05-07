@@ -4,23 +4,33 @@
             <UiButton @click="sendLogin">Se connecter</UiButton>
         </div>
         <div v-if="isEditMode" class="edit">
-            <UiButton v-if="isEditMode" @click="deleteAccount" class="button" variant="transparent">
+            <UiButton
+                v-if="isEditMode"
+                @click="deleteAccount"
+                class="button"
+                variant="transparent"
+            >
                 <img src="../../assets/svg/delete.svg" alt="delete" />
             </UiButton>
-            <div v-if="isEditMode" @click="" class="button" variant="transparent">
+            <div
+                v-if="isEditMode"
+                @click=""
+                class="button"
+                variant="transparent"
+            >
                 <img src="../../assets/svg/drag.svg" alt="drag" />
             </div>
         </div>
     </div>
 </template>
 <script setup lang="ts">
-import { login } from '../../utils/RiotClient';
+import { useRiotLCUAPI } from '../../utils/RiotClient';
 import { PropType } from 'vue';
 import { Account } from '../../types';
 import UiButton from '../ui/Button.vue';
 
 const emits = defineEmits(['delete:account']);
-
+const riotAPI = useRiotLCUAPI();
 const props = defineProps({
     isEditMode: {
         type: Boolean,
@@ -32,22 +42,25 @@ const props = defineProps({
     }
 });
 
-function sendLogin() {
+async function sendLogin() {
+    let res = null
     try {
-        login(props.account.username, props.account.password);
-    } catch (e) {
-        console.log(e);
+        res = await riotAPI.login(props.account.username, props.account.password);
+    } catch (error) {
+        if (error.response.status === 400) {
+            throw new Error("Un compte est déjà connecté");
+        } else if (error.response.status === 404) {
+            throw new Error("Le launcher ne semble pas être ouvert");
+        }
+    }
+    if (res.data.error) {
+        throw new Error("Les identifiants sont incorrects");
     }
 }
 
 function deleteAccount() {
-    try {
-        emits('delete:account', props.account);
-    } catch (e) {
-        console.log(e);
-    }
+    emits('delete:account', props.account);
 }
-
 </script>
 <style lang="scss" scoped>
 .actions {

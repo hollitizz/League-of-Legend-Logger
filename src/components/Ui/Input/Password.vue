@@ -9,6 +9,7 @@
             :value="modelValue"
             :style="{ maxWidth }"
             @input="handleInput"
+            @keydown.enter.prevent="emits('enter')"
         />
     </div>
 </template>
@@ -16,7 +17,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const emits = defineEmits(['update:modelValue']);
+const emits = defineEmits(['update:modelValue', 'enter']);
 defineProps({
     modelValue: {
         type: String,

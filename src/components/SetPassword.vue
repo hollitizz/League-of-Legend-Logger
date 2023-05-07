@@ -5,6 +5,7 @@
             <UiInputPassword
                 v-model="passwordConfirm"
                 label="Confirmer le mot de passe"
+                @enter="setPassword"
             />
             <div class="buttons">
                 <UiButton @click="setPassword">Valider</UiButton>
@@ -28,7 +29,7 @@ const password = ref('' as string);
 
 function setPassword() {
     if (password.value !== passwordConfirm.value) {
-        return;
+        throw new Error('Les mots de passe ne correspondent pas');
     }
     emits('set:password', password.value);
     emits('update:modelValue', false);
