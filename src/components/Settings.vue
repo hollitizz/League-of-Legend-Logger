@@ -43,7 +43,9 @@
                         v-model="newPasswordConfirm"
                         label="Confirmer le nouveau mot de passe"
                     />
-                    <UiButton @click="changePassword">Changer le mot de passe</UiButton>
+                    <UiButton @click="changePassword"
+                        >Changer le mot de passe</UiButton
+                    >
                 </div>
             </UiCardsRectangle>
         </div>
@@ -51,7 +53,7 @@
     <SetPassword
         v-if="isSettingPassword"
         v-model="isSettingPassword"
-        @set:password="settingsStore.setPassword($event); emits('update:encryption', true, $event)"
+        @set:password="setPassword"
     />
     <AskPassword
         v-if="isAskingPassword"
@@ -72,10 +74,13 @@ import SetPassword from './SetPassword.vue';
 import AskPassword from './AskPassword.vue';
 import { Account } from '../types';
 import { ipcRenderer } from 'electron';
+import { useAlerts } from '../utils/Alerts';
 
 const settingsStore = useSettingsStore();
 settingsStore.loadSettings();
 const { settings } = storeToRefs(settingsStore);
+
+const { success } = useAlerts();
 
 const props = defineProps({
     modelValue: {
@@ -88,8 +93,11 @@ const props = defineProps({
     }
 });
 
-const emits = defineEmits(['update:modelValue', 'update:encryption', 'add:accounts']);
-
+const emits = defineEmits([
+    'update:modelValue',
+    'update:encryption',
+    'add:accounts'
+]);
 const isSettingPassword = ref(false);
 const isAskingPassword = ref(false);
 
@@ -100,12 +108,22 @@ const newPasswordConfirm = ref('' as string);
 function importAccounts() {
     ipcRenderer.send('import-accounts');
     ipcRenderer.on('import-accounts-reply', (event, accounts) => {
-        emits('add:accounts', accounts)
+        emits('add:accounts', accounts);
     });
 }
 
 function exportAccounts() {
-    ipcRenderer.send('export-accounts', JSON.stringify(props.accounts, null, 4));
+    ipcRenderer.send(
+        'export-accounts',
+        JSON.stringify(props.accounts, null, 4)
+    );
+    success('Les comptes ont bien été exportés !');
+}
+
+function setPassword(password: string) {
+    settingsStore.setPassword(password);
+    emits('update:encryption', true, password);
+    success('Le mot de passe a bien été défini !');
 }
 
 function handleEncryptionButton() {
@@ -121,13 +139,14 @@ function changePassword() {
         throw new Error('Les nouveaux mots de passe ne correspondent pas');
     }
     settingsStore.changePassword(oldPassword.value, newPassword.value);
+    success('Le mot de passe a bien été changé !');
 }
 
 function disableEncryption(password: string) {
     settingsStore.deletePassword(password);
-    emits('update:encryption', false)
+    emits('update:encryption', false);
+    success('Le chiffrement a été désactivé !');
 }
-
 </script>
 
 <style lang="scss" scoped>

@@ -2,6 +2,7 @@ import fs from 'fs';
 import { Account } from '../types';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+
 const encryptpwd = require('encrypt-with-password');
 
 export const useAccountStore = defineStore('accountsStore', () => {
@@ -78,6 +79,9 @@ export const useAccountStore = defineStore('accountsStore', () => {
             if (inAcc.tier === undefined) inAcc.tier = 0;
             if (inAcc.rank === undefined) inAcc.rank = 0;
             if (inAcc.lp === undefined) inAcc.lp = 0;
+            if (inAcc.is_provisional) inAcc.is_provisional = false;
+            if (inAcc.wins === undefined) inAcc.wins = 0;
+            if (inAcc.losses === undefined) inAcc.losses = 0;
             accounts.value.push({ ...inAcc });
         });
         saveAccounts();
@@ -99,6 +103,15 @@ export const useAccountStore = defineStore('accountsStore', () => {
         saveAccounts();
     }
 
+    function updateAccount(from: Account, to: Account): void {
+        const index = accounts.value.findIndex(
+            acc => acc.summoner_name === from.summoner_name
+        );
+        if (index === -1) return;
+        accounts.value[index] = to;
+        saveAccounts();
+    }
+
     return {
         accounts,
         password,
@@ -108,6 +121,7 @@ export const useAccountStore = defineStore('accountsStore', () => {
         addAccount,
         deleteAccount,
         moveAccount,
-        importAccounts
+        importAccounts,
+        updateAccount
     };
 });

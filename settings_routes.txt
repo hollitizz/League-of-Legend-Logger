@@ -1,0 +1,2 @@
+https://127.0.0.1:58530/lol-game-settings/v1/game-settings
+https://127.0.0.1:58530/lol-game-settings/v1/input-settings

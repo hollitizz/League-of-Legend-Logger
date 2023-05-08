@@ -2,8 +2,7 @@ import App from './App.vue';
 import { createApp } from 'vue';
 import './style.css';
 import './samples/node-api';
-import Toast, { POSITION } from 'vue-toastification';
-import { useToast } from 'vue-toastification';
+import Toast, { POSITION, useToast } from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 import { createPinia } from 'pinia';
 
@@ -23,7 +22,7 @@ app.config.errorHandler = function (err) {
             position: POSITION.TOP_RIGHT,
             timeout: 3000,
             closeOnClick: true,
-            pauseOnFocusLoss: true,
+            pauseOnFocusLoss: false,
             pauseOnHover: true,
             draggable: true,
             draggablePercent: 0.6,

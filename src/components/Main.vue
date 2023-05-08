@@ -1,7 +1,7 @@
 <template>
     <AccountAddAccount
         v-if="isAddingAccount"
-        @add:account="accountStore.addAccount"
+        @add:account="addAccount"
         v-model="isAddingAccount"
     />
     <Settings
@@ -9,7 +9,7 @@
         v-model="isSettingsOpen"
         :accounts="accounts"
         @update:encryption="changeEncryption"
-        @add:accounts="accountStore.importAccounts"
+        @add:accounts="importAccounts"
     />
     <UiButton @click="openSettings" class="button-settings">
         <img src="../assets/svg/settings.svg" alt="edit" />
@@ -17,7 +17,7 @@
     <UiButton @click="editAccounts" class="button-edit">
         <img src="../assets/svg/edit.svg" alt="edit" />
     </UiButton>
-    <UiButton @click="addAccount" class="button-add">
+    <UiButton @click="isAddingAccount = true" class="button-add">
         <img src="../assets/svg/add.svg" alt="add" />
     </UiButton>
     <AccountAccounts
@@ -25,7 +25,8 @@
         :isEditMode="isEditMode"
         :accounts="accounts"
         @update:accounts="accountStore.moveAccount"
-        @delete:account="accountStore.deleteAccount"
+        @delete:account="deleteAccount"
+        @update:account="updateAccount"
     />
 </template>
 <script setup lang="ts">
@@ -36,9 +37,11 @@ import UiButton from './ui/Button.vue';
 import AccountAddAccount from './account/AddAccount.vue';
 import Settings from './Settings.vue';
 import { storeToRefs } from 'pinia';
+import { useAlerts } from '../utils/Alerts';
+import { Account, RankedStats } from '../types';
 
 const props = defineProps({
-    password: {
+    modelValue: {
         type: String,
         required: true
     },
@@ -51,21 +54,18 @@ const props = defineProps({
 const isEditMode = ref(false);
 const isAddingAccount = ref(false);
 const isSettingsOpen = ref(false);
-
+const { success } = useAlerts();
 const accountStore = useAccountStore();
 const { accounts, password, isEncrypted } = storeToRefs(accountStore);
+
 if (props.isEncrypted) {
-    password.value = props.password;
+    password.value = props.modelValue;
     isEncrypted.value = props.isEncrypted;
 }
 accountStore.loadAccounts();
 
 function editAccounts() {
     isEditMode.value = !isEditMode.value;
-}
-
-function addAccount() {
-    isAddingAccount.value = true;
 }
 
 function openSettings() {
@@ -77,6 +77,25 @@ watch(isEncrypted, () => {
         accountStore.loadAccounts();
     }
 });
+
+function updateAccount(from:Account, to: Account) {
+    accountStore.updateAccount(from, to);
+}
+
+function addAccount(account: Account) {
+    accountStore.addAccount(account);
+    success(`Le compte "${account.username}" a bien été ajouté !`);
+}
+
+function deleteAccount(account: Account) {
+    accountStore.deleteAccount(account);
+    success(`Le compte "${account.username}" a bien été supprimé !`);
+}
+
+function importAccounts(accounts: Account[]) {
+    accountStore.importAccounts(accounts);
+    success(`Les comptes ont été correctement importé !`);
+}
 
 function changeEncryption(isEncrypt: boolean, pass: string) {
     password.value = pass;

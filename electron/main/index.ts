@@ -53,7 +53,7 @@ async function createWindow() {
         title: 'Main window',
         width: 1000,
         height: 800,
-        icon: join(process.env.PUBLIC, 'favicon.ico'),
+        icon: 'src/assets/favicon.ico',
         autoHideMenuBar: true,
         resizable: false,
         webPreferences: {

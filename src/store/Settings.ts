@@ -3,9 +3,11 @@ import { ref } from 'vue';
 import { Settings } from '../types';
 import fs from 'fs';
 import bcrypt from 'bcryptjs';
+import { useAlerts } from '../utils/Alerts';
 
 export const useSettingsStore = defineStore('settings', () => {
     const settings = ref({} as Settings);
+    const { success } = useAlerts();
 
     function loadSettings() {
         let file = null;
@@ -42,20 +44,20 @@ export const useSettingsStore = defineStore('settings', () => {
         if (bcrypt.compareSync(oldPassword, settings.value.password ?? '')) {
             setPassword(password);
         } else {
-            throw new Error('Mauvais mot de passe');
+            throw new Error('Mot de passe incorrect');
         }
     }
 
     function checkPassword(password: string) {
         if (!bcrypt.compareSync(password, settings.value.password ?? '')) {
-            throw new Error('Mauvais mot de passe');
+            throw new Error('Mot de passe incorrect');
         }
         return true;
     }
 
     function deletePassword(password: string) {
         if (!bcrypt.compareSync(password, settings.value.password ?? '')) {
-            throw new Error('Mauvais mot de passe');
+            throw new Error('Mot de passe incorrect');
         }
         settings.value.password = '';
         settings.value.isEncrypted = false;

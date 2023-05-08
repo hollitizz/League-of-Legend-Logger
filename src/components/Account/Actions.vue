@@ -27,9 +27,11 @@
 import { useRiotLCUAPI } from '../../utils/RiotClient';
 import { PropType } from 'vue';
 import { Account } from '../../types';
+import { useAlerts } from '../../utils/Alerts';
 import UiButton from '../ui/Button.vue';
 
-const emits = defineEmits(['delete:account']);
+const { success } = useAlerts();
+const emits = defineEmits(['delete:account', "login:success"]);
 const riotAPI = useRiotLCUAPI();
 const props = defineProps({
     isEditMode: {
@@ -56,6 +58,8 @@ async function sendLogin() {
     if (res.data.error) {
         throw new Error("Les identifiants sont incorrects");
     }
+    success("Connexion Réussie");
+    emits('login:success', props.account);
 }
 
 function deleteAccount() {

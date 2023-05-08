@@ -4,7 +4,7 @@ import { RankedStats } from '../types';
 import axios from 'axios';
 import https from 'https';
 
-export const useLeagueLCURequests = () => {
+export const useLeagueLCUAPI = () => {
     const clientName = ref<string>('');
     const pid = ref<string>('');
     const port = ref<string>('');
@@ -19,7 +19,24 @@ export const useLeagueLCURequests = () => {
     });
     const baseUrl = ref<string>(`${method.value}://127.0.0.1:${port.value}`);
 
-    function refreshLockfile(): void {
+    function sleep(s: number) {
+        return new Promise(resolve => setTimeout(resolve, s * 1000));
+    }
+
+    async function refreshLockfile(): Promise<void> {
+        const lockfile = `${process.env['SystemDrive']}/Riot Games/League of Legends/lockfile`;
+        let i = 0;
+        while (!fs.existsSync(lockfile)) {
+            console.log('Waiting for lockfile...');
+            await sleep(1);
+            i++;
+            if (i > 100) {
+                throw new Error(
+                    'Une erreur est survenue lors de la récupération des statistiques'
+                );
+            }
+        }
+
         [
             clientName.value,
             pid.value,
@@ -32,14 +49,74 @@ export const useLeagueLCURequests = () => {
                 'utf-8'
             )
             .split(':');
+        baseUrl.value = `${method.value}://127.0.0.1:${port.value}`;
+        auth.value.password = password.value;
     }
 
-    async function getRankedData(): Promise<RankedStats> {
-        refreshLockfile();
-        const endpoint = `${baseUrl.value}/lol-ranked/v1/ranked-stats`;
-        const response = await axios.get(endpoint, { auth: auth.value, httpsAgent });
-        return response.data;
+    async function getCurrentSummonerName(): Promise<string> {
+        await refreshLockfile();
+        const endpoint = `${baseUrl.value}/lol-summoner/v1/current-summoner`;
+        let response = null;
+        let count = 0;
+        await sleep(5);
+        while (true) {
+            try {
+                response = await axios.get(endpoint, {
+                    auth: auth.value,
+                    httpsAgent
+                });
+                break;
+            } catch (error) {
+                await sleep(1);
+                count++;
+                if (count > 20) {
+                    throw new Error(
+                        'Une erreur est survenue lors de la récupération des statistiques'
+                    );
+                }
+            }
+        }
+        console.log(response.data);
+        return response.data.displayName;
     }
 
-    return { getRankedData };
+    async function getCurrentSummonerRankedDatas(): Promise<RankedStats> {
+        await refreshLockfile();
+        const endpoint = `${baseUrl.value}/lol-ranked/v1/current-ranked-stats`;
+        let response = null;
+        let count = 0;
+        await sleep(5);
+        while (true) {
+            try {
+                response = await axios.get(endpoint, {
+                    auth: auth.value,
+                    httpsAgent
+                });
+                break;
+            } catch (error) {
+                await sleep(1);
+                count++;
+                if (count > 20) {
+                    throw new Error(
+                        'Une erreur est survenue lors de la récupération des statistiques'
+                    );
+                }
+            }
+        }
+        const soloQStats = response.data.queues.find(
+            (queue: any) => queue.queueType === 'RANKED_SOLO_5x5'
+        );
+        return {
+            tier: soloQStats.tier,
+            division: soloQStats.division,
+            leaguePoints: soloQStats.leaguePoints,
+            miniSeriesProgress: soloQStats.miniSeriesProgress,
+            wins: soloQStats.wins,
+            losses: soloQStats.losses,
+            isProvisional: soloQStats.isProvisional
+        };
+    }
+
+
+    return { getCurrentSummonerRankedDatas, getCurrentSummonerName };
 };

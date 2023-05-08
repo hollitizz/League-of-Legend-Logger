@@ -6,6 +6,9 @@ export interface Account {
     tier: number;
     rank: number;
     lp: number;
+    is_provisional: boolean;
+    wins: number;
+    losses: number;
 }
 
 export interface Settings {
@@ -15,25 +18,13 @@ export interface Settings {
 }
 
 export interface RankedStats {
-    division: string;
-    highestDivision: string;
-    highestTier: string;
-    isProvisional: boolean;
-    leaguePoints: number;
-    losses: number;
-    miniSeriesProgress: string;
-    previousSeasonAchievedDivision: string;
-    previousSeasonAchievedTier: string;
-    previousSeasonEndDivision: string;
-    previousSeasonEndTier: string;
-    provisionalGameThreshold: number;
-    provisionalGamesRemaining: number;
-    queueType: string;
-    ratedRating: number;
-    ratedTier: string;
     tier: string;
-    warnings: null;
+    division: string;
+    leaguePoints: number;
+    miniSeriesProgress: string;
+    isProvisional: boolean;
     wins: number;
+    losses: number;
 }
 
 export class RequestError extends Error {

@@ -14,6 +14,8 @@
             >
                 <AccountAccount
                     @delete:account="handleDeleteAccount"
+                    @login:success="updateAccount"
+                    @update:account="updateAccount"
                     :isEditMode="isEditMode"
                     :account="account"
                 />
@@ -27,7 +29,8 @@ import AccountAccount from './Account.vue';
 import UiCardsRectangle from '../ui/cards/Rectangle.vue';
 import { PropType } from 'vue';
 
-const emits = defineEmits(['update:accounts', 'delete:account']);
+
+const emits = defineEmits(['update:accounts', 'delete:account', 'update:account']);
 
 const props = defineProps({
     isEditMode: {
@@ -42,6 +45,10 @@ const props = defineProps({
 
 function handleDeleteAccount(account: Account) {
     emits('delete:account', account);
+}
+
+async function updateAccount(from: Account, to: Account) {
+    emits('update:account', from, to);
 }
 
 function dragStart(event: DragEvent, index: number) {

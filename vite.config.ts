@@ -72,8 +72,8 @@ export default defineConfig(({ command }) => {
         ],
         pluginOptions: {
             electronBuilder: {
-                preload: 'dist-electron/preload/index.js'
-            },
+                preload: 'dist-electron/preload/index.js',
+            }
         },
         server:
             process.env.VSCODE_DEBUG &&
