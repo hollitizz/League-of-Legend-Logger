@@ -117,7 +117,9 @@ function exportAccounts() {
         'export-accounts',
         JSON.stringify(props.accounts, null, 4)
     );
-    success('Les comptes ont bien été exportés !');
+    ipcRenderer.on('export-accounts-reply', (event) => {
+        success('Les comptes ont bien été exportés !');
+    });
 }
 
 function setPassword(password: string) {

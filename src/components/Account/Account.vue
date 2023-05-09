@@ -91,14 +91,12 @@ function checkStillLoggedIn() {
 }
 
 async function updateAccount() {
-    isLogged.value = true;
     let summoner = null;
     let rankedStats = {} as RankedStats;
     try {
         summoner = await getSummonerInfo();
         rankedStats = await getCurrentSummonerRankedData();
     } catch (error) {
-        isLogged.value = false;
         return;
     }
     const to: Account = {
@@ -115,6 +113,7 @@ async function updateAccount() {
         is_provisional: rankedStats.isProvisional
     };
     emits('update:account', account.value, to);
+    isLogged.value = true;
     checkStillLoggedIn();
     account.value = to;
 }

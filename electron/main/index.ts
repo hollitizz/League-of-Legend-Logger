@@ -99,7 +99,7 @@ app.whenReady().then(() => {
         globalShortcut.register('CommandOrControl+R', () => {});
         globalShortcut.register('CommandOrControl+Shift+R', () => {});
         globalShortcut.register('Alt+CommandOrControl+I', () => {});
-        // globalShortcut.register('Shift+CommandOrControl+I', () => { })
+        globalShortcut.register('Shift+CommandOrControl+I', () => {});
     }
     createWindow();
     ipcMain.on('export-accounts', (event, file: string) => {
@@ -108,6 +108,7 @@ app.whenReady().then(() => {
         });
         if (path) {
             fs.writeFileSync(path[0], file);
+            event.reply('export-accounts-reply');
         }
     });
     ipcMain.on('import-accounts', event => {
