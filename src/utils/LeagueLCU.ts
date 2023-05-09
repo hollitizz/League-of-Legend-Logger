@@ -24,18 +24,10 @@ export const useLeagueLCUAPI = () => {
         return new Promise(resolve => setTimeout(resolve, s * 1000));
     }
 
-    async function refreshLockfile(): Promise<void> {
+    function refreshLockfile() {
         const lockfilePath = `${process.env['LEAGUE_LOCKFILE']}`;
-        let i = 0;
-        while (!fs.existsSync(lockfilePath)) {
-            console.log('Waiting for lockfile...');
-            await sleep(1);
-            i++;
-            if (i > 100) {
-                throw new Error(
-                    'Une erreur est survenue lors de la récupération des statistiques'
-                );
-            }
+        if (!fs.existsSync(`${process.env['LEAGUE_LOCKFILE']}`)) {
+            throw new Error("League of Legends n'a pas été détecté");
         }
         [
             clientName.value,
@@ -48,43 +40,73 @@ export const useLeagueLCUAPI = () => {
         auth.value.password = password.value;
     }
 
-    async function getCurrentSummonerName(): Promise<{
+    async function checkIsLoggedIn(id: number = -1): Promise<boolean> {
+        try {
+            refreshLockfile();
+            const response = await axios.get(
+                `${baseUrl.value}/lol-login/v1/session`,
+                {
+                    auth: auth.value,
+                    httpsAgent
+                }
+            );
+            if (response.status !== 200 || !response.data.summonerId) throw new Error('Not logged in');
+            if (id === -1) return true;
+            return response.data.summonerId === id;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async function waitIsLoggedIn() {
+        let count = 0;
+        while (true) {
+            const response = await checkIsLoggedIn();
+            if (response) {
+                break;
+            }
+            await sleep(1);
+            console.log('waitIsLoggedIn');
+            count++;
+            if (count > 50) {
+                throw new Error(
+                    'Une erreur est survenue lors de la récupération des statistiques'
+                );
+            }
+        }
+        return true;
+    }
+
+    async function getSummonerInfo(): Promise<{
         summoner_name: string;
         iconId: number;
         level: number;
+        id: number;
     }> {
-        await refreshLockfile();
+        await waitIsLoggedIn();
         const endpoint = `${baseUrl.value}/lol-summoner/v1/current-summoner`;
         let response = null;
-        let count = 0;
-        while (true) {
-            try {
-                response = await axios.get(endpoint, {
-                    auth: auth.value,
-                    httpsAgent
-                });
-                break;
-            } catch (error) {
-                await sleep(1);
-                count++;
-                if (count > 40) {
-                    throw new Error(
-                        'Une erreur est survenue lors de la récupération des statistiques'
-                    );
-                }
-            }
-        }
+
+        response = await axios.get(endpoint, {
+            auth: auth.value,
+            httpsAgent
+        });
         const iconId = response.data.profileIconId;
         ipcRenderer.send(
             'download-image',
             `http://ddragon.leagueoflegends.com/cdn/13.9.1/img/profileicon/${iconId}.png`,
             `profileIcons/${iconId}.png`
         );
-        return { summoner_name: response.data.displayName, iconId, level: response.data.summonerLevel };
+        return {
+            summoner_name: response.data.displayName,
+            iconId,
+            level: response.data.summonerLevel,
+            id: response.data.summonerId
+        };
     }
 
-    async function getCurrentSummonerRankedDatas(): Promise<RankedStats> {
-        await refreshLockfile();
+    async function getCurrentSummonerRankedData(): Promise<RankedStats> {
+        await waitIsLoggedIn();
         const endpoint = `${baseUrl.value}/lol-ranked/v1/current-ranked-stats`;
         let response = null;
         let count = 0;
@@ -115,9 +137,9 @@ export const useLeagueLCUAPI = () => {
             miniSeriesProgress: soloQStats.miniSeriesProgress,
             wins: soloQStats.wins,
             losses: soloQStats.losses,
-            isProvisional: soloQStats.isProvisional,
+            isProvisional: soloQStats.isProvisional
         };
     }
 
-    return { getCurrentSummonerRankedDatas, getCurrentSummonerName };
+    return { getCurrentSummonerRankedData, getSummonerInfo, checkIsLoggedIn };
 };

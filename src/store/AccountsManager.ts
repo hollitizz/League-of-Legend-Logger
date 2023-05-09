@@ -33,6 +33,18 @@ export const useAccountStore = defineStore('accountsStore', () => {
         } else {
             accounts.value = JSON.parse(file).accounts;
         }
+        accounts.value.forEach(acc => {
+            if (acc.id === undefined) acc.id = 0;
+            if (acc.tier === undefined) acc.tier = 0;
+            if (acc.rank === undefined) acc.rank = 0;
+            if (acc.lp === undefined) acc.lp = 0;
+            if (acc.icon_id === undefined) acc.icon_id = 0;
+            if (acc.is_provisional === undefined) acc.is_provisional = false;
+            if (acc.wins === undefined) acc.wins = 0;
+            if (acc.losses === undefined) acc.losses = 0;
+            if (acc.summoner_level === undefined) acc.summoner_level = 0;
+        });
+        saveAccounts();
     }
 
     function saveAccounts(): void {
@@ -76,14 +88,18 @@ export const useAccountStore = defineStore('accountsStore', () => {
                 )
             )
                 return;
-            if (inAcc.tier === undefined) inAcc.tier = 0;
-            if (inAcc.rank === undefined) inAcc.rank = 0;
-            if (inAcc.lp === undefined) inAcc.lp = 0;
-            if (inAcc.is_provisional) inAcc.is_provisional = false;
-            if (inAcc.wins === undefined) inAcc.wins = 0;
-            if (inAcc.losses === undefined) inAcc.losses = 0;
-            if (inAcc.summoner_level === undefined) inAcc.summoner_level = 0;
             accounts.value.push({ ...inAcc });
+        });
+        accounts.value.forEach(acc => {
+            if (acc.id === undefined) acc.id = 0;
+            if (acc.tier === undefined) acc.tier = 0;
+            if (acc.rank === undefined) acc.rank = 0;
+            if (acc.lp === undefined) acc.lp = 0;
+            if (acc.icon_id === undefined) acc.icon_id = 0;
+            if (acc.is_provisional === undefined) acc.is_provisional = false;
+            if (acc.wins === undefined) acc.wins = 0;
+            if (acc.losses === undefined) acc.losses = 0;
+            if (acc.summoner_level === undefined) acc.summoner_level = 0;
         });
         saveAccounts();
     }
