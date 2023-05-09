@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { RankedStats } from '../types';
 import axios from 'axios';
 import https from 'https';
+import { ipcRenderer } from 'electron';
 
 export const useLeagueLCUAPI = () => {
     const clientName = ref<string>('');
@@ -24,9 +25,9 @@ export const useLeagueLCUAPI = () => {
     }
 
     async function refreshLockfile(): Promise<void> {
-        const lockfile = `${process.env['SystemDrive']}/Riot Games/League of Legends/lockfile`;
+        const lockfilePath = `${process.env['LEAGUE_LOCKFILE']}`;
         let i = 0;
-        while (!fs.existsSync(lockfile)) {
+        while (!fs.existsSync(lockfilePath)) {
             console.log('Waiting for lockfile...');
             await sleep(1);
             i++;
@@ -36,29 +37,26 @@ export const useLeagueLCUAPI = () => {
                 );
             }
         }
-
         [
             clientName.value,
             pid.value,
             port.value,
             password.value,
             method.value
-        ] = fs
-            .readFileSync(
-                `${process.env['SystemDrive']}/Riot Games/League of Legends/lockfile`,
-                'utf-8'
-            )
-            .split(':');
+        ] = fs.readFileSync(`${lockfilePath}`, 'utf-8').split(':');
         baseUrl.value = `${method.value}://127.0.0.1:${port.value}`;
         auth.value.password = password.value;
     }
 
-    async function getCurrentSummonerName(): Promise<string> {
+    async function getCurrentSummonerName(): Promise<{
+        summoner_name: string;
+        iconId: number;
+        level: number;
+    }> {
         await refreshLockfile();
         const endpoint = `${baseUrl.value}/lol-summoner/v1/current-summoner`;
         let response = null;
         let count = 0;
-        await sleep(5);
         while (true) {
             try {
                 response = await axios.get(endpoint, {
@@ -69,15 +67,20 @@ export const useLeagueLCUAPI = () => {
             } catch (error) {
                 await sleep(1);
                 count++;
-                if (count > 20) {
+                if (count > 40) {
                     throw new Error(
                         'Une erreur est survenue lors de la récupération des statistiques'
                     );
                 }
             }
         }
-        console.log(response.data);
-        return response.data.displayName;
+        const iconId = response.data.profileIconId;
+        ipcRenderer.send(
+            'download-image',
+            `http://ddragon.leagueoflegends.com/cdn/13.9.1/img/profileicon/${iconId}.png`,
+            `profileIcons/${iconId}.png`
+        );
+        return { summoner_name: response.data.displayName, iconId, level: response.data.summonerLevel };
     }
 
     async function getCurrentSummonerRankedDatas(): Promise<RankedStats> {
@@ -85,7 +88,6 @@ export const useLeagueLCUAPI = () => {
         const endpoint = `${baseUrl.value}/lol-ranked/v1/current-ranked-stats`;
         let response = null;
         let count = 0;
-        await sleep(5);
         while (true) {
             try {
                 response = await axios.get(endpoint, {
@@ -96,7 +98,7 @@ export const useLeagueLCUAPI = () => {
             } catch (error) {
                 await sleep(1);
                 count++;
-                if (count > 20) {
+                if (count > 40) {
                     throw new Error(
                         'Une erreur est survenue lors de la récupération des statistiques'
                     );
@@ -113,10 +115,9 @@ export const useLeagueLCUAPI = () => {
             miniSeriesProgress: soloQStats.miniSeriesProgress,
             wins: soloQStats.wins,
             losses: soloQStats.losses,
-            isProvisional: soloQStats.isProvisional
+            isProvisional: soloQStats.isProvisional,
         };
     }
-
 
     return { getCurrentSummonerRankedDatas, getCurrentSummonerName };
 };

@@ -82,6 +82,7 @@ export const useAccountStore = defineStore('accountsStore', () => {
             if (inAcc.is_provisional) inAcc.is_provisional = false;
             if (inAcc.wins === undefined) inAcc.wins = 0;
             if (inAcc.losses === undefined) inAcc.losses = 0;
+            if (inAcc.summoner_level === undefined) inAcc.summoner_level = 0;
             accounts.value.push({ ...inAcc });
         });
         saveAccounts();

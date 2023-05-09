@@ -6,9 +6,11 @@ export interface Account {
     tier: number;
     rank: number;
     lp: number;
+    icon_id: number;
     is_provisional: boolean;
     wins: number;
     losses: number;
+    summoner_level: number;
 }
 
 export interface Settings {

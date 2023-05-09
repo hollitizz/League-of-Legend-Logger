@@ -81,8 +81,17 @@ function useLoading() {
         }
     };
 }
-
 // ----------------------------------------------------------------------
+
+if (process.platform === 'darwin') {
+    process.env.RIOT_LOCKFILE = `${process.env.HOME}/Library/Application Support/Riot Games/Riot Client/Config/lockfile`;
+    process.env.LEAGUE_LOCKFILE = `/Applications/League\ of\ Legends.app/Contents/LoL/lockfile`;
+} else if (process.platform === 'win32') {
+    process.env.RIOT_LOCKFILE = `${process.env['LOCALAPPDATA']}/Riot Games/Riot Client/Config/lockfile`;
+    process.env.LEAGUE_LOCKFILE = `${process.env['SystemDrive']}/Riot Games/League of Legends/lockfile`;
+} else {
+    throw new Error('Unsupported platform')
+}
 
 const { appendLoading, removeLoading } = useLoading();
 domReady().then(appendLoading);

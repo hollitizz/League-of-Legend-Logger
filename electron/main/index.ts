@@ -9,6 +9,7 @@ import {
 import { release } from 'node:os';
 import { join } from 'node:path';
 import fs from 'fs';
+import axios from 'axios';
 
 // The built directory structure
 //
@@ -97,7 +98,7 @@ app.whenReady().then(() => {
         globalShortcut.register('F12', () => {});
         globalShortcut.register('CommandOrControl+R', () => {});
         globalShortcut.register('CommandOrControl+Shift+R', () => {});
-        globalShortcut.register('Alt+CommandOrControl+I', () => { })
+        globalShortcut.register('Alt+CommandOrControl+I', () => {});
         // globalShortcut.register('Shift+CommandOrControl+I', () => { })
     }
     createWindow();
@@ -106,12 +107,10 @@ app.whenReady().then(() => {
             defaultPath: process.env.USERPROFILE + '\\Downloads\\accounts.lal'
         });
         if (path) {
-            fs.writeFileSync(path[0],
-                file
-            );
+            fs.writeFileSync(path[0], file);
         }
     });
-    ipcMain.on('import-accounts', (event) => {
+    ipcMain.on('import-accounts', event => {
         const path = dialog.showOpenDialogSync({
             defaultPath: process.env.USERPROFILE + '\\Downloads\\accounts.lal'
         });
@@ -119,6 +118,14 @@ app.whenReady().then(() => {
             const file = fs.readFileSync(path[0], 'utf8');
             event.reply('import-accounts-reply', JSON.parse(file));
         }
+    });
+    ipcMain.on('download-image', (event, url, path) => {
+        if (!fs.existsSync('profileIcons')) {
+            fs.mkdirSync('profileIcons');
+        }
+        axios.get(url, { responseType: 'stream' }).then(res => {
+            res.data.pipe(fs.createWriteStream(path));
+        });
     });
 });
 

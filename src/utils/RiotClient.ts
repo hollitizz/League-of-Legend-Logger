@@ -28,7 +28,7 @@ export const useRiotLCUAPI = () => {
             method.value
         ] = fs
             .readFileSync(
-                `${process.env['LOCALAPPDATA']}/Riot Games/Riot Client/Config/lockfile`,
+                `${process.env['RIOT_LOCKFILE']}`,
                 'utf-8'
             )
             .split(':');
