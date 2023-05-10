@@ -1,5 +1,5 @@
 <template>
-    <div class="name-fields">
+    <div class="name-fields" :key="imgKey" >
         <div v-if="account.icon_id && iconExists" class="profileIcon">
             <img :src="icon" alt="icon" />
             <p class="lvl">{{ account.summoner_level }}</p>
@@ -9,8 +9,9 @@
 </template>
 <script setup lang="ts">
 import { Account } from '../../types';
-import { PropType, computed, watch } from 'vue';
+import { PropType, computed, ref } from 'vue';
 import fs from 'fs';
+import { ipcRenderer } from 'electron';
 
 const props = defineProps({
     account: {
@@ -20,13 +21,26 @@ const props = defineProps({
 });
 
 const iconExists = computed(() => {
+    imgKey.value++;
+    if (!props.account.icon_id) return false;
     return fs.existsSync(`profileIcons/${props.account.icon_id}.png`);
 });
 
-const icon = computed(() => {
-    return `../../../profileIcons/${props.account.icon_id}.png`;
-});
+const icon = ref(`../../../profileIcons/${props.account.icon_id}.png`);
 
+const imgKey = ref(0);
+
+function sleep(s: number) {
+    return new Promise((resolve) => setTimeout(resolve, s * 1000));
+}
+
+ipcRenderer.on('download-image-reply', async (event, id) => {
+    if (props.account.id === id) {
+        await sleep(1);
+        console.log('downloaded imageof '+ props.account.summoner_name);
+        imgKey.value++;
+    }
+});
 </script>
 <style lang="scss" scoped>
 .mx-auto {

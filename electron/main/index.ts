@@ -120,13 +120,13 @@ app.whenReady().then(() => {
             event.reply('import-accounts-reply', JSON.parse(file));
         }
     });
-    ipcMain.on('download-image', (event, url, path) => {
+    ipcMain.on('download-image', (event, url, path, summoner_id) => {
         if (!fs.existsSync('profileIcons')) {
             fs.mkdirSync('profileIcons');
         }
         axios.get(url, { responseType: 'stream' }).then(res => {
             res.data.pipe(fs.createWriteStream(path));
-        });
+        }).then(() => { event.reply('download-image-reply', summoner_id); });
     });
 });
 

@@ -71,7 +71,18 @@ export const useAccountStore = defineStore('accountsStore', () => {
     function addAccount(account: Account): void {
         if (!account.summoner_name || !account.username || !account.password)
             return;
-        accounts.value.push({ ...account, tier: 0, rank: 0, lp: 0 });
+        accounts.value.push({
+            ...account,
+            tier: 0,
+            rank: 0,
+            lp: 0,
+            id: 0,
+            icon_id: 0,
+            is_provisional: false,
+            wins: 0,
+            losses: 0,
+            summoner_level: 0
+        });
         saveAccounts();
     }
 
